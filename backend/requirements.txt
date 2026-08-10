@@ -1,0 +1,16 @@
+fastapi
+uvicorn 
+python-multipart 
+pillow
+python-dotenv
+openai
+numpy
+qdrant-client
+sqlalchemy
+psycopg2-binary
+pydantic-settings
+bcrypt
+requests
+pydantic[email]
+pyjwt[crypto]
+cloudinary
