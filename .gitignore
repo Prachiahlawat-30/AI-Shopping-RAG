@@ -3,9 +3,10 @@
 .env.*
 !.env.example
 
-# Python
+# Python virtual environments
 .venv/
 venv/
+backend.venv/
 __pycache__/
 *.py[cod]
 
