@@ -1,16 +1,31 @@
 fastapi
-uvicorn 
-python-multipart 
+uvicorn[standard]
+python-multipart
 pillow
 python-dotenv
+
+# Pydantic
+pydantic
+pydantic-settings
+email-validator
+
+# OpenAI
 openai
-numpy
+
+# Vector Search
 qdrant-client
+
+# Database
 sqlalchemy
 psycopg2-binary
-pydantic-settings
+
+# Authentication / Security
 bcrypt
-requests
-pydantic[email]
-pyjwt[crypto]
+PyJWT[crypto]
+
+# Cloudinary
 cloudinary
+
+# HTTP / Utilities
+requests
+numpy

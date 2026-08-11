@@ -1,13 +1,26 @@
-# Environment variables
+# Environment
 .env
 .env.*
 !.env.example
 
 # Python
 .venv/
+venv/
 __pycache__/
-*.pyc
+*.py[cod]
 
 # Node
 node_modules/
 dist/
+.vite/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Uploaded files
+backend/uploads/*
+!backend/uploads/.gitkeep
