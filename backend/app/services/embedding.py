@@ -45,14 +45,18 @@ class EmbeddingService:
                 self._client = QdrantClient(location=":memory:")
             else:
                 logger.info(f"Connecting to Qdrant at {settings.QDRANT_URL}")
-                self._client = QdrantClient(
+                remote_client = QdrantClient(
                     url=settings.QDRANT_URL,
                     api_key=settings.QDRANT_API_KEY or None,
-                    timeout=5.0,
+                    timeout=4.0,
                 )
+                # Verify live cluster availability
+                remote_client.get_collections()
+                self._client = remote_client
+                logger.info("Connected to remote Qdrant Cloud successfully.")
             self._ensure_collection()
         except Exception as e:
-            logger.warning(f"Failed to connect to Qdrant at {settings.QDRANT_URL}: {e}. Falling back to :memory:")
+            logger.warning(f"Failed to connect to Qdrant at {settings.QDRANT_URL}: {e}. Falling back to in-memory mode (:memory:)")
             self._client = QdrantClient(location=":memory:")
             self._ensure_collection()
 
@@ -73,7 +77,20 @@ class EmbeddingService:
                 logger.info(f"Created Qdrant collection: {self.collection_name}")
             self._collection_initialized = True
         except Exception as e:
-            logger.warning(f"Error verifying/creating collection: {e}")
+            logger.warning(f"Error creating collection: {e}. Switching to in-memory mode.")
+            self._client = QdrantClient(location=":memory:")
+            try:
+                self._client.create_collection(
+                    collection_name=self.collection_name,
+                    vectors_config=VectorParams(
+                        size=VECTOR_SIZE,
+                        distance=Distance.COSINE,
+                    ),
+                )
+                self._collection_initialized = True
+            except Exception:
+                pass
+
 
     # ---------------------------------------------------------
     # Embedding Generation
@@ -129,18 +146,38 @@ class EmbeddingService:
         if user_id:
             payload["user_id"] = str(user_id)
 
-        self.client.upsert(
-            collection_name=self.collection_name,
-            points=[
-                PointStruct(
-                    id=product_id,
-                    vector=vector,
-                    payload=payload,
+        try:
+            self.client.upsert(
+                collection_name=self.collection_name,
+                points=[
+                    PointStruct(
+                        id=product_id,
+                        vector=vector,
+                        payload=payload,
+                    )
+                ],
+            )
+        except Exception as e:
+            logger.warning(f"Qdrant upsert failed on active client: {e}. Falling back to in-memory mode.")
+            self._client = QdrantClient(location=":memory:")
+            self._collection_initialized = False
+            self._ensure_collection()
+            try:
+                self.client.upsert(
+                    collection_name=self.collection_name,
+                    points=[
+                        PointStruct(
+                            id=product_id,
+                            vector=vector,
+                            payload=payload,
+                        )
+                    ],
                 )
-            ],
-        )
+            except Exception as inner_e:
+                logger.error(f"In-memory Qdrant upsert error: {inner_e}")
 
     store_document = store_product
+
 
     # ---------------------------------------------------------
     # Build Filter
