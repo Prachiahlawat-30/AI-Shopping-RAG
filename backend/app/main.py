@@ -34,15 +34,34 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS configuration (allows local dev, Vercel deployments, and production URLs)
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_origin_regex=r"https://.*\.vercel\.app|http://localhost:.*|http://127\.0\.0\.1:.*",
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_cors_and_error_handling(request, call_next):
+    if request.method == "OPTIONS":
+        from fastapi import Response
+        res = Response(status_code=200)
+    else:
+        try:
+            res = await call_next(request)
+        except Exception as e:
+            from fastapi.responses import JSONResponse
+            res = JSONResponse(
+                status_code=500,
+                content={"detail": str(e), "message": "Server error processing request."},
+            )
+    res.headers["Access-Control-Allow-Origin"] = "*"
+    res.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    res.headers["Access-Control-Allow-Headers"] = "*"
+    return res
+
 
 
 # Mount Static Files for Uploads
