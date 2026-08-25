@@ -34,23 +34,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
-allowed_origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "http://localhost:80",
-    settings.FRONTEND_URL,
-]
-allowed_origins = list(dict.fromkeys([o for o in allowed_origins if o]))
-
+# CORS configuration (allows local dev, Vercel deployments, and production URLs)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins if "*" not in allowed_origins else ["*"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_origin_regex=r"https://.*\.vercel\.app|http://localhost:.*|http://127\.0\.0\.1:.*",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Mount Static Files for Uploads
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
