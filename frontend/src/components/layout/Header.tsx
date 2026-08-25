@@ -53,13 +53,14 @@ export function Header() {
           </div>
 
           <UserButton
-            afterSignOutUrl="/login"
             appearance={{
               elements: {
                 avatarBox: "w-9 h-9",
               },
             }}
           />
+
+
 
           <button
             type="button"

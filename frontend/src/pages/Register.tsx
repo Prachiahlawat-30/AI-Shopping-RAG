@@ -7,7 +7,7 @@ export default function Register() {
         routing="path"
         path="/register"
         signInUrl="/login"
-        afterSignUpUrl="/"
+        fallbackRedirectUrl="/"
         appearance={{
           variables: {
             colorPrimary: "#6366f1",
@@ -18,6 +18,7 @@ export default function Register() {
           },
         }}
       />
+
     </div>
   );
 }
