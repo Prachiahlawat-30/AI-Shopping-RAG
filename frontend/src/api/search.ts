@@ -40,12 +40,7 @@ export async function imageSearch(
 
   const { data } = await api.post<SearchResponse>(
     `/search/image?limit=${limit}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
 
   return data;
@@ -75,16 +70,12 @@ export async function hybridSearch(
 
   const { data } = await api.post<SearchResponse>(
     "/search/hybrid",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
 
   return data;
 }
+
 
 // --------------------------------------------------
 // Product Comparison
