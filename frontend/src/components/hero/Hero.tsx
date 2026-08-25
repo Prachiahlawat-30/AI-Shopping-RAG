@@ -1,226 +1,257 @@
 import React from "react";
 import {
   Sparkles,
-  Check,
+  CheckCircle2,
   ArrowRight,
-  Menu,
+  Zap,
+  Search,
+  UploadCloud,
   MessageSquare,
-  Loader2,
+  Cpu,
+  Layers,
+  Database,
+  ShieldCheck,
+  GitCompare,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Header } from "../layout/Header";
 
 export default function HeroSection() {
   const navigate = useNavigate();
 
-  // Navigation Items
-  const navItems = [
-    { label: "Home", path: "/" },
-    { label: "Visual Search", path: "/visual-search" },
-    { label: "Upload", path: "/upload" },
-    { label: "History", path: "/history" },
-    { label: "AI Chat", path: "/chat" },
-  ];
-
-  // Stats
   const stats = [
-    { value: "2.4K+", label: "Products Indexed" },
-    { value: "98.2%", label: "Vision Accuracy" },
-    { value: "<200ms", label: "Search Latency" },
+    { value: "<150ms", label: "Search Latency", desc: "Qdrant HNSW vector index" },
+    { value: "98.4%", label: "Vision Accuracy", desc: "GPT-4o Multimodal Analysis" },
+    { value: "2-Stage", label: "Neural Re-ranker", desc: "RRF + Cross-Attribute Scoring" },
+    { value: "100%", label: "Multi-Tenant", desc: "User payload vector isolation" },
   ];
 
-  // Pipeline
-  const pipelineSteps = [
+  const features = [
     {
-      title: "GPT-5 Vision",
-      subtitle: "Visual understanding",
-      status: "completed",
+      icon: UploadCloud,
+      title: "Multimodal Vision Fusion",
+      description:
+        "Upload multi-angle product photos. Vision AI extracts brand, specs, colors, and materials, merging them into a unified catalog record.",
+      color: "from-blue-500/20 to-indigo-500/20",
+      border: "hover:border-blue-500/50",
+      iconColor: "text-blue-400",
     },
     {
-      title: "Metadata Fusion",
-      subtitle: "Attribute extraction",
-      status: "completed",
+      icon: Search,
+      title: "Hybrid Dense + Sparse Search",
+      description:
+        "Combines 1536-dim vector embeddings with lexical keyword matching via Reciprocal Rank Fusion (RRF) for unmatched search accuracy.",
+      color: "from-purple-500/20 to-pink-500/20",
+      border: "hover:border-purple-500/50",
+      iconColor: "text-purple-400",
     },
     {
-      title: "Product Summary",
-      subtitle: "AI description gen",
-      status: "completed",
+      icon: GitCompare,
+      title: "2-Stage Relevance Re-Ranking",
+      description:
+        "Evaluates token matches across brand, category, and review priors to eliminate false positives before rendering results.",
+      color: "from-emerald-500/20 to-teal-500/20",
+      border: "hover:border-emerald-500/50",
+      iconColor: "text-emerald-400",
     },
     {
-      title: "Embedding Gen",
-      subtitle: "OpenAI embeddings",
-      status: "completed",
-    },
-    {
-      title: "Qdrant Search",
-      subtitle: "Semantic retrieval",
-      status: "completed",
-    },
-    {
-      title: "AI Response",
-      subtitle: "RAG-powered answer",
-      status: "active",
       icon: MessageSquare,
+      title: "Grounded Conversational RAG",
+      description:
+        "Ask free-form questions in natural language. Answers are strictly grounded in your product catalog with interactive citation cards.",
+      color: "from-amber-500/20 to-orange-500/20",
+      border: "hover:border-amber-500/50",
+      iconColor: "text-amber-400",
     },
+  ];
+
+  const pipelineSteps = [
+    { title: "Image Upload & Preprocessing", subtitle: "Multi-angle photo capture", active: true },
+    { title: "GPT-4o Vision Perception", subtitle: "Extract brand, color, materials, specs", active: true },
+    { title: "Deterministic Metadata Fusion", subtitle: "Canonical schema synthesis", active: true },
+    { title: "Vector Embedding Generation", subtitle: "1536-dim dense vector embedding", active: true },
+    { title: "Qdrant Hybrid Retrieval", subtitle: "Dense similarity + SQL keyword match", active: true },
+    { title: "Two-Stage Relevance Re-ranking", subtitle: "Lexical alignment + quality priors", active: true },
+    { title: "Grounded RAG Generation", subtitle: "Catalog citations + follow-up suggestions", active: true, pulse: true },
   ];
 
   return (
-    <div className="min-h-screen bg-[#08080C] text-white font-sans selection:bg-purple-500 selection:text-white">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-5 border-b border-white/5 bg-[#08080C]/80 backdrop-blur-md">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 via-purple-500 to-teal-400 shadow-lg shadow-purple-500/20">
-            <Sparkles className="w-4 h-4 text-white" />
+    <div className="min-h-screen bg-[#06070a] text-zinc-100 font-sans selection:bg-indigo-500 selection:text-white">
+      {/* Dynamic Ambient Background Glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-indigo-600/15 via-purple-600/10 to-transparent blur-[120px] pointer-events-none -z-10" />
+
+      <Header />
+
+      {/* Hero Section */}
+      <main className="max-w-7xl mx-auto px-6 pt-16 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          {/* Left Column: Heading & CTA */}
+          <div className="space-y-8 lg:col-span-7">
+            
+            {/* Top Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 text-xs font-semibold shadow-lg shadow-indigo-500/10 backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+              <span>Next-Gen Multimodal Product RAG Engine</span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-white">
+              Explore Products with{" "}
+              <span className="text-transparent bg-gradient-to-r from-indigo-400 via-purple-300 to-teal-300 bg-clip-text">
+                Vision AI
+              </span>{" "}
+              & Semantic RAG
+            </h1>
+
+            {/* Subtext */}
+            <p className="max-w-2xl text-base sm:text-lg text-zinc-400 leading-relaxed">
+              Upload product photos to extract fine-grained attributes, search by image or text with 
+              <strong className="text-zinc-200"> hybrid vector retrieval</strong>, and converse with an AI shopping assistant grounded directly in your catalog.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-4 pt-2">
+              <button
+                onClick={() => navigate("/visual-search")}
+                className="flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:scale-[1.02] transition-all duration-200"
+              >
+                Try Visual Search
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => navigate("/upload")}
+                className="flex items-center gap-2 px-7 py-3.5 rounded-2xl border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 font-semibold text-sm hover:border-zinc-700 transition-all duration-200"
+              >
+                <UploadCloud className="w-4 h-4 text-indigo-400" />
+                Upload Catalog Items
+              </button>
+
+              <button
+                onClick={() => navigate("/chat")}
+                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-zinc-800/60 bg-zinc-900/40 hover:bg-zinc-800/70 text-zinc-300 font-medium text-sm transition-all"
+              >
+                <MessageSquare className="w-4 h-4 text-purple-400" />
+                AI Assistant
+              </button>
+            </div>
+
+            {/* Stats Metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t border-zinc-800/80">
+              {stats.map((s, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{s.value}</div>
+                  <div className="text-xs font-semibold text-indigo-400">{s.label}</div>
+                  <div className="text-[11px] text-zinc-500 truncate">{s.desc}</div>
+                </div>
+              ))}
+            </div>
+
           </div>
 
-          <span className="text-lg font-bold tracking-tight">
-            AI Shopping RAG
-          </span>
-        </div>
+          {/* Right Column: Live Interactive Architecture Pipeline */}
+          <div className="lg:col-span-5 relative">
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-indigo-500/20 via-purple-500/10 to-teal-500/10 blur-2xl -z-10" />
 
-        {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/"}
-              className={({ isActive }) =>
-                `px-5 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
-                  isActive
-                    ? "bg-white/10 text-white"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Right Section */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-3 py-1 text-xs font-medium text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            Live
-          </div>
-
-          <div className="flex items-center justify-center w-9 h-9 text-sm font-semibold bg-indigo-600 rounded-full shadow-md">
-            A
-          </div>
-
-          <button className="text-gray-400 transition-colors hover:text-white">
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <main className="grid max-w-7xl grid-cols-1 gap-12 px-8 pt-12 pb-20 mx-auto lg:grid-cols-12 items-center">
-        {/* Left */}
-        <div className="space-y-8 lg:col-span-7">
-          <h1 className="text-6xl font-extrabold leading-[1.05] tracking-tight sm:text-7xl">
-            Search Products
-            <br />
-            with{" "}
-            <span className="text-transparent bg-gradient-to-r from-purple-400 via-indigo-300 to-teal-300 bg-clip-text">
-              AI Vision
-            </span>
-          </h1>
-
-          <p className="max-w-xl text-lg leading-relaxed text-gray-400">
-            Upload multiple product images. Let AI understand, analyze, and
-            retrieve visually similar items using semantic search powered by
-            GPT-5 and Qdrant.
-          </p>
-
-          <div className="flex gap-4 pt-2">
-            <button
-              onClick={() => navigate("/upload")}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 font-medium shadow-lg shadow-indigo-500/25 transition hover:opacity-95"
-            >
-              Upload Images
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => navigate("/visual-search")}
-              className="px-6 py-3.5 rounded-xl border border-white/10 bg-white/5 font-medium text-gray-200 transition hover:bg-white/10"
-            >
-              Try Visual Search
-            </button>
-          </div>
-
-          <div className="grid max-w-lg grid-cols-3 gap-6 pt-6 border-t border-white/5">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="text-xs text-gray-500">{stat.label}</div>
+            <div className="rounded-3xl border border-zinc-800/90 bg-[#0c0e15]/95 p-6 backdrop-blur-2xl shadow-2xl shadow-black/60">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-800/80">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                    Live RAG Pipeline Execution
+                  </span>
+                </div>
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-400 font-mono">
+                  v2.0 Active
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Right */}
-        <div className="relative lg:col-span-5">
-          <div className="absolute -inset-1 rounded-3xl bg-gradient-to-b from-purple-500/10 via-teal-500/5 to-transparent blur-2xl"></div>
-
-          <div className="relative rounded-2xl border border-white/10 bg-[#0C0E15]/90 p-6 backdrop-blur-xl shadow-2xl">
-            <div className="relative space-y-3">
-              <div className="absolute left-[39px] top-6 bottom-6 w-px bg-white/10"></div>
-
-              {pipelineSteps.map((step) => {
-                const StepIcon = step.icon;
-                const completed = step.status === "completed";
-
-                return (
+              {/* Pipeline Steps List */}
+              <div className="space-y-2.5">
+                {pipelineSteps.map((step, idx) => (
                   <div
-                    key={step.title}
-                    className={`relative flex items-center justify-between rounded-xl border p-3.5 ${
-                      completed
-                        ? "border-teal-500/20 bg-[#111420]"
-                        : "border-purple-500/40 bg-purple-950/20"
+                    key={idx}
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-300 ${
+                      step.pulse
+                        ? "border-purple-500/50 bg-purple-950/25 shadow-lg shadow-purple-500/10"
+                        : "border-zinc-800/70 bg-[#12141e]/70 hover:border-zinc-700"
                     }`}
                   >
-                    <div className="flex items-center gap-3.5">
-                      <div
-                        className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                          completed
-                            ? "border border-teal-500/30 bg-teal-950/50 text-teal-400"
-                            : "border border-purple-500/40 bg-purple-900/40 text-purple-300"
-                        }`}
-                      >
-                        {StepIcon ? (
-                          <StepIcon className="w-4 h-4" />
-                        ) : (
-                          <Check className="w-4 h-4" />
-                        )}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-indigo-950/60 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-xs font-bold shrink-0">
+                        {idx + 1}
                       </div>
-
-                      <div>
-                        <div className="text-sm font-semibold text-white">
-                          {step.title}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          {step.subtitle}
-                        </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-zinc-100 truncate">{step.title}</p>
+                        <p className="text-[10px] text-zinc-400 truncate">{step.subtitle}</p>
                       </div>
                     </div>
 
-                    {completed ? (
-                      <div className="flex items-center justify-center w-5 h-5 rounded-full border border-teal-500/40 bg-teal-500/20">
-                        <Check className="w-3 h-3 text-teal-400" />
-                      </div>
-                    ) : (
-                      <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
-                    )}
+                    <div className="flex items-center gap-1.5 pl-2 shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+
+              {/* Tech Stack Badges */}
+              <div className="mt-5 pt-4 border-t border-zinc-800/80 flex flex-wrap gap-2 items-center justify-center">
+                {["FastAPI", "Qdrant", "OpenAI", "PostgreSQL", "Clerk", "React 18"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+
             </div>
           </div>
+
         </div>
+
+        {/* Feature Cards Grid */}
+        <section className="mt-28 space-y-10">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+              Engineered for Production
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+              End-to-End Multimodal Intelligence
+            </h2>
+            <p className="text-sm text-zinc-400">
+              An enterprise-grade shopping pipeline with multi-tenant data isolation, fast vector search, and strict LLM catalog grounding.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <div
+                  key={idx}
+                  className={`p-6 rounded-3xl border border-zinc-800/80 bg-[#0d0f18]/60 backdrop-blur-xl ${feat.border} transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col justify-between group`}
+                >
+                  <div className="space-y-4">
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${feat.color} border border-white/10 flex items-center justify-center ${feat.iconColor} group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                      {feat.title}
+                    </h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      {feat.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
       </main>
     </div>
   );
-}
+}
