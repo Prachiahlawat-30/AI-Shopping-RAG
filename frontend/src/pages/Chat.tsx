@@ -56,6 +56,8 @@ export const AIChatPage: React.FC = () => {
     setActiveChatId(newId);
   };
 
+  const [suggestions, setSuggestions] = useState<string[]>(SUGGESTIONS);
+
   const handleSendMessage = async (textToSend?: string) => {
     const query = textToSend || inputText;
     if (!query.trim() || loading) return;
@@ -75,6 +77,14 @@ export const AIChatPage: React.FC = () => {
       )
     );
 
+    const prevChatMessages = messagesMap[activeChatId] || [];
+    const historyPayload = prevChatMessages
+      .filter((m) => m.id !== 'welcome' && m.id !== 'typing')
+      .map((m) => ({
+        role: (m.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: m.text,
+      }));
+
     setMessagesMap((prev) => ({
       ...prev,
       [activeChatId]: [...(prev[activeChatId] || []), userMsg],
@@ -82,20 +92,26 @@ export const AIChatPage: React.FC = () => {
 
     setInputText('');
 
-    const response = await ask(query);
+    const response = await ask(query, historyPayload);
 
     const aiMsg: Message = {
       id: `ai-${Date.now()}`,
       sender: 'ai',
       text: response?.answer || 'Sorry, something went wrong answering that — please try again.',
       timestamp: timeNow(),
+      products: response?.products,
     };
+
+    if (response?.suggested_followups && response.suggested_followups.length > 0) {
+      setSuggestions(response.suggested_followups);
+    }
 
     setMessagesMap((prev) => ({
       ...prev,
       [activeChatId]: [...(prev[activeChatId] || []), aiMsg],
     }));
   };
+
 
   const currentMessages = messagesMap[activeChatId] || [];
   const currentChatTitle = conversations.find((c) => c.id === activeChatId)?.title || 'AI Product Assistant';
@@ -165,7 +181,7 @@ export const AIChatPage: React.FC = () => {
             )}
 
             <div className="flex flex-wrap justify-center gap-2 mb-4 w-full">
-              {SUGGESTIONS.map((pill, idx) => (
+              {suggestions.map((pill, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSendMessage(pill)}
@@ -176,6 +192,7 @@ export const AIChatPage: React.FC = () => {
                 </button>
               ))}
             </div>
+
 
             <div className="w-full relative">
               <textarea

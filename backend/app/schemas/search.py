@@ -172,5 +172,31 @@ class SearchSuggestionsResponse(BaseModel):
 # ============================================================
 
 class SearchHistoryResponse(BaseModel):
-
     recent_searches: List[str]
+
+
+# ============================================================
+# Trending Searches
+# ============================================================
+
+class TrendingSearchesResponse(BaseModel):
+    trending_searches: List[str]
+
+
+# ============================================================
+# Product Comparison
+# ============================================================
+
+class ProductComparisonRequest(BaseModel):
+    product_ids: List[int] = Field(
+        ...,
+        min_length=2,
+        max_length=5,
+        description="List of 2 to 5 product IDs to compare",
+    )
+
+
+class ProductComparisonResponse(BaseModel):
+    products: List[ProductCard]
+    spec_matrix: Dict[str, Dict[str, Any]]
+    comparison_summary: str

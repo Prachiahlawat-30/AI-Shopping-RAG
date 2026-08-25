@@ -118,19 +118,27 @@ export default function ProductCard({ product, onCompare }: Props) {
               Compare
             </Button>
 
-            <Button
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 transition-all text-xs"
-              asChild
-            >
+            {product.product_url ? (
               <a
                 href={product.product_url}
                 target="_blank"
                 rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 transition-all text-xs font-medium px-3 py-2"
               >
                 View
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
               </a>
-            </Button>
+            ) : (
+              <Button
+                type="button"
+                className="rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 transition-all text-xs"
+                onClick={() => onCompare?.(product)}
+              >
+                Details
+                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+              </Button>
+            )}
+
           </div>
 
         </CardContent>

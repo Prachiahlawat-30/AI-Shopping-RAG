@@ -1,11 +1,14 @@
 import { api } from "./client";
 
 import {
+  ProductComparisonResponse,
+  SearchFilters,
+  SearchHistoryResponse,
   SearchRequest,
   SearchResponse,
-  SimilarProductsResponse,
   SearchSuggestionsResponse,
-  SearchHistoryResponse,
+  SimilarProductsResponse,
+  TrendingSearchesResponse,
 } from "@/types/search";
 
 // --------------------------------------------------
@@ -43,6 +46,56 @@ export async function imageSearch(
         "Content-Type": "multipart/form-data",
       },
     }
+  );
+
+  return data;
+}
+
+// --------------------------------------------------
+// Multimodal Hybrid Search
+// --------------------------------------------------
+
+export async function hybridSearch(
+  image?: File,
+  query?: string,
+  filters?: SearchFilters,
+  limit = 20
+): Promise<SearchResponse> {
+  const formData = new FormData();
+  if (image) {
+    formData.append("image", image);
+  }
+  if (query) {
+    formData.append("query", query);
+  }
+  if (filters) {
+    formData.append("filters_json", JSON.stringify(filters));
+  }
+  formData.append("limit", limit.toString());
+
+  const { data } = await api.post<SearchResponse>(
+    "/search/hybrid",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return data;
+}
+
+// --------------------------------------------------
+// Product Comparison
+// --------------------------------------------------
+
+export async function compareProducts(
+  productIds: number[]
+): Promise<ProductComparisonResponse> {
+  const { data } = await api.post<ProductComparisonResponse>(
+    "/search/compare",
+    { product_ids: productIds }
   );
 
   return data;
@@ -87,31 +140,26 @@ export async function getSuggestions(
 // Recent Searches
 // --------------------------------------------------
 
-export async function getSearchHistory(): Promise<SearchHistoryResponse> {
+export async function getSearchHistory(limit = 10): Promise<SearchHistoryResponse> {
   const { data } =
     await api.get<SearchHistoryResponse>(
-      "/search/history"
+      "/search/history",
+      { params: { limit } }
     );
 
   return data;
 }
 
 // --------------------------------------------------
-// Hybrid Search (Future)
+// Trending Searches
 // --------------------------------------------------
 
-export async function hybridSearch(
-  formData: FormData
-): Promise<SearchResponse> {
-  const { data } = await api.post<SearchResponse>(
-    "/search/hybrid",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+export async function getTrendingSearches(limit = 6): Promise<TrendingSearchesResponse> {
+  const { data } =
+    await api.get<TrendingSearchesResponse>(
+      "/search/trending",
+      { params: { limit } }
+    );
 
   return data;
-}
+}

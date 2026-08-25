@@ -63,9 +63,11 @@ async def upload_images(
     )
 
     image_urls = [
-        f"/uploads/{os.path.basename(path)}"
-        for path in product.image_paths
+        path if (path.startswith("http://") or path.startswith("https://") or path.startswith("/uploads/"))
+        else f"/uploads/{os.path.basename(path)}"
+        for path in (product.image_paths or [])
     ]
+
 
     return {
 

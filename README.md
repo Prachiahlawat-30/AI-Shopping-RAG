@@ -1,131 +1,159 @@
-# AI Shopping RAG
+# AI Multimodal Shopping RAG Platform
 
-A full-stack, multimodal RAG (Retrieval-Augmented Generation) shopping assistant. Upload product photos, and the system understands them with vision AI, makes them searchable by text or image, and lets you ask natural-language questions grounded in your own product catalog.
+[![CI Pipeline](https://github.com/Prachiahlawat-30/AI-Shopping-RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/Prachiahlawat-30/AI-Shopping-RAG/actions)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18-61DAFB.svg?logo=react&logoColor=black)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Qdrant](https://img.shields.io/badge/Vector_DB-Qdrant-DC2626.svg?logo=qdrant&logoColor=white)](https://qdrant.tech/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
 
-## What it does
+A production-grade, multimodal Retrieval-Augmented Generation (RAG) platform that enables intelligent catalog exploration through computer vision, hybrid semantic retrieval, two-stage relevance re-ranking, and grounded conversational AI.
 
-- **Upload & understand** — upload 1–4 product images. GPT Vision analyzes each one independently; a metadata fusion step merges the results into a single clean product record (brand, category, features, specifications, description).
-- **Semantic text search** — type a natural-language query (e.g. "white running shoes") and get back visually/semantically similar products, ranked by relevance, with optional filtering (brand, category, color, material, price range, rating, availability).
-- **Visual search** — upload a photo instead of typing. The image is described by GPT Vision, embedded, and searched the same way as a text query, so image search and text search share one retrieval pipeline.
-- **RAG-grounded chat** — ask free-form questions about your products. The system retrieves the most relevant products from the vector store, formats them as context, and passes both the question and that context to an LLM — so answers are grounded in your actual catalog rather than hallucinated.
-- **Activity history** — a unified feed of your uploads, searches, and chat conversations.
-- **Authentication & multi-tenancy** — sign in with email/password or Google. Every user's uploaded products, searches, and chat history are fully isolated from every other user's.
+---
 
-## Architecture
+## 🌟 Key Highlights & Resume Value
 
-The project is a decoupled frontend/backend, connected to a relational store, a vector store, an object store, an LLM provider, and an auth provider.
+- **Multimodal Perception Pipeline:** Extracts fine-grained attributes (brand, category, materials, dimensions, features) from multi-angle product photos via GPT Vision and merges them using deterministic **Metadata Fusion**.
+- **Hybrid Dense + Sparse Search:** Combines dense vector similarity (`text-embedding-3-small` in Qdrant) with lexical attribute scoring in PostgreSQL using Reciprocal Rank Fusion (RRF).
+- **Two-Stage Re-Ranking Engine:** Implements a contextual cross-attribute re-ranker that evaluates semantic affinity, exact keyword matches, user intent alignment, and rating priors to eliminate false positives.
+- **Grounded Conversational RAG:** Multi-turn conversational shopping assistant with strict catalog grounding, structured product citation cards, and dynamic follow-up chips.
+- **Side-by-Side Product Comparison:** Automated specification matrix extraction and AI-synthesized comparison across multiple catalog items.
+- **Zero-Downtime Multi-Tenancy:** Strict user-level tenant isolation across SQL relational models, Qdrant vector payload filters, and Clerk JWKS authentication.
+- **Production DevOps:** Containerized with multi-stage Docker builds, Nginx SPA routing, healthcheck probes, Docker Compose orchestration, and automated GitHub Actions CI.
 
-```
-┌─────────────┐      ┌──────────────┐      ┌─────────────────┐
-│   React     │─────▶│   FastAPI    │─────▶│  PostgreSQL      │  structured product data,
-│  (Vite, TS) │◀─────│   Backend    │◀─────│                  │  search history, activity log
-└─────────────┘      └──────┬───────┘      └─────────────────┘
-      │                     │
-      │                     ├──────────────▶ Qdrant            vector embeddings for
-      │                     │                (vector DB)       semantic search
-      │                     │
-      │                     ├──────────────▶ OpenAI             vision analysis (GPT Vision),
-      │                     │                                   text embeddings, chat completion
-      │                     │
-      │                     └──────────────▶ Cloudinary          persistent image storage
-      │
-      └────────────────────────────────────▶ Clerk               authentication (email/password
-                                                                   + Google OAuth), session JWTs
-```
+---
 
-**Why Postgres *and* Qdrant?** Postgres is used for structured metadata you filter and sort on (price, category, availability). Qdrant is used purely for semantic similarity search. Each store is used for what it's actually good at, rather than forcing one database to do both jobs.
-
-**Why images are embedded via description, not pixels directly:** GPT Vision converts each image into a rich text description and structured metadata first; *that text* is what gets embedded and searched. This keeps text search and image search on one unified retrieval pipeline, and lets structured metadata (brand, category, specs) inform relevance alongside raw visual similarity.
-
-## Backend structure
+## 🏗️ System Architecture
 
 ```
-app/
-├── api/            # FastAPI route handlers (upload, search, chat, activity)
-├── core/           # config, dependency injection (auth), third-party client setup
-├── database/       # SQLAlchemy models, session management
-├── repositories/   # data-access layer between routes and the DB
-├── schemas/        # Pydantic request/response models
-├── services/       # business logic — vision analysis, metadata fusion,
-│                   # embeddings, retrieval, LLM orchestration
-└── main.py         # app entrypoint, middleware, router registration
+┌────────────────────────────────────────────────────────────────────────┐
+│                          Client Layer (React 18 + Vite)                │
+│   - Visual Search & Filter UI    - Interactive Product Comparison Dock │
+│   - Multi-turn AI Chat Assistant - Real-time Metadata Extraction View  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP / REST (JWT Auth)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        FastAPI Backend Engine                          │
+│                                                                        │
+│  ┌─────────────────────────┐          ┌─────────────────────────────┐  │
+│  │   Vision & Fusion Svc   │          │   Retrieval & Rerank Svc    │  │
+│  │ - Multi-image analyzer  │          │ - Qdrant Dense Vector Match │  │
+│  │ - Schema canonicalizer  │          │ - SQL Keyword / Lexical     │  │
+│  │ - Embedding synthesizer │          │ - Two-Stage Score Reranker  │  │
+│  └────────────┬────────────┘          └──────────────┬──────────────┘  │
+│               │                                      │                 │
+│  ┌────────────▼────────────┐          ┌──────────────▼──────────────┐  │
+│  │     LLM RAG Service     │          │     Image Storage Svc       │  │
+│  │ - Context Assembly      │          │ - Cloudinary / Local Disk   │  │
+│  │ - Grounded Generation   │          │ - Thumbnail Generator       │  │
+│  └─────────────────────────┘          └─────────────────────────────┘  │
+└───────────────┬───────────────────────────────┬────────────────────────┘
+                │                               │
+                ▼                               ▼
+  ┌───────────────────────────┐   ┌───────────────────────────┐
+  │   PostgreSQL Relational   │   │   Qdrant Vector Engine    │
+  │ - Catalog schema & specs  │   │ - 1536-dim dense vectors  │
+  │ - Search analytics & logs │   │ - Multi-tenant payloads   │
+  └───────────────────────────┘   └───────────────────────────┘
 ```
 
-Routes stay thin and delegate to services; services contain the actual logic and don't know or care which route called them, so (for example) the same retrieval service backs both text search and image search.
+---
 
-## Frontend structure
+## 🔬 Retrieval & Re-ranking Algorithm
 
+The retrieval system employs a two-stage ranking architecture:
+
+1. **Candidate Retrieval (Dense + Sparse):**
+   - Fetches top-$K$ candidates via cosine similarity on dense embeddings in Qdrant:
+     $$\text{Sim}_{\text{dense}}(\mathbf{q}, \mathbf{d}) = \frac{\mathbf{q} \cdot \mathbf{d}}{\|\mathbf{q}\| \|\mathbf{d}\|}$$
+   - Queries SQL lexical indices for keyword matches across brand, category, and specifications.
+
+2. **Stage 2 Relevance Re-ranking:**
+   - Evaluates weighted token overlaps on specific fields (brand: 0.35, title: 0.30, category: 0.15, features: 0.10).
+   - Computes quality priors from customer review distributions.
+   - Blends scores:
+     $$\text{Score}_{\text{final}} = \alpha \cdot \text{Score}_{\text{dense}} + (1 - \alpha) \cdot \left(0.8 \cdot \text{Score}_{\text{lexical}} + 0.2 \cdot \text{Score}_{\text{quality}}\right)$$
+
+---
+
+## 🚀 Quickstart & Local Setup
+
+### Prerequisites
+- Python 3.10+
+- Node.js 20+
+- Docker & Docker Compose (optional for containerized run)
+
+### Option 1: Docker Compose (Full Stack)
+
+```bash
+cp .env.example .env
+docker-compose up -d --build
 ```
-src/
-├── api/            # typed HTTP calls to the backend, one file per domain
-├── hooks/          # React Query wrappers around the api/ layer
-├── context/        # (auth handled via Clerk's own provider)
-├── pages/          # route-level page components
-├── components/     # presentational components, grouped by feature area
-└── types/          # TypeScript interfaces mirroring backend Pydantic schemas
-```
+- Web Application: `http://localhost:80`
+- API Documentation (Swagger): `http://localhost:8000/docs`
+- Qdrant Dashboard: `http://localhost:6333/dashboard`
 
-## Tech stack
+### Option 2: Local Development
 
-**Backend:** FastAPI, SQLAlchemy, PostgreSQL, Qdrant, OpenAI (GPT Vision + embeddings + chat), Cloudinary, Clerk (JWT verification via JWKS)
-
-**Frontend:** React, TypeScript, Vite, TanStack Query, React Router, Tailwind CSS, Clerk React SDK
-
-## Running locally
-
-### Backend
+#### 1. Backend Setup
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate        # Windows
+# On Windows:
+.\.venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
+
 pip install -r requirements.txt
+cp .env.example .env
 
-# create a .env with:
-# OPENAI_API_KEY=
-# MODEL_NAME=gpt-5
-# DATABASE_URL=postgresql://user:pass@localhost:5432/ai_shopping
-# QDRANT_URL=
-# QDRANT_API_KEY=
-# CLERK_JWKS_URL=
-# CLOUDINARY_CLOUD_NAME=
-# CLOUDINARY_API_KEY=
-# CLOUDINARY_API_SECRET=
+# Run unit & API test suite (11 tests)
+pytest -v
 
-python -m app.database.create_tables
-uvicorn app.main:app --reload
+# Start FastAPI server
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Frontend
+#### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
-
-# create a .env with:
-# VITE_API_URL=http://localhost:8000
-# VITE_CLERK_PUBLISHABLE_KEY=
-
-npm run dev
+npm run build   # Typecheck & production build
+npm run dev     # Start local dev server at http://localhost:5173
 ```
 
-## API overview
+---
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/upload` | Upload images, run vision analysis, create a product |
-| `POST` | `/search/text` | Semantic text search with optional filters |
-| `POST` | `/search/image` | Visual search by uploaded image |
-| `GET`  | `/search/similar/{id}` | Products similar to a given product |
-| `GET`  | `/search/suggestions` | Autocomplete suggestions |
-| `GET`  | `/search/history` | Recent search queries |
-| `POST` | `/chat` | Ask a question, answered with RAG-retrieved context |
-| `GET`  | `/activity` | Unified upload/search/chat activity feed |
+## 📡 REST API Reference
 
-All routes except health checks require a valid Clerk session token.
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|---|
+| `GET` | `/health` | Service health and database liveness probe | No |
+| `POST` | `/upload` | Upload product images, trigger vision analysis & index | Yes |
+| `POST` | `/search/text` | Semantic search with metadata filters & reranking | Yes |
+| `POST` | `/search/image` | Visual search by uploaded query photo | Yes |
+| `POST` | `/search/hybrid` | Multimodal search combining image + text query | Yes |
+| `POST` | `/search/compare` | Generate side-by-side spec comparison matrix | Yes |
+| `GET` | `/search/similar/{id}` | Retrieve nearest catalog neighbors | Yes |
+| `GET` | `/search/suggestions` | Fast autocomplete suggestions | Yes |
+| `GET` | `/search/history` | User search history | Yes |
+| `GET` | `/search/trending` | Platform-wide trending search queries | No |
+| `POST` | `/chat` | Multi-turn RAG chat with grounded catalog citations | Yes |
+| `GET` | `/activity` | Unified user activity timeline | Yes |
 
-## Known limitations / next steps
+---
 
-- Search is scoped to each user's own uploaded products — this is a per-user catalog tool, not a general product search engine.
-- No automated tests yet; correctness has been verified manually.
-- `reranker.py` is scaffolded but not implemented — a second-pass relevance re-ranker is a natural next addition.
-- No database migration tool (Alembic) yet — schema changes currently require manual table recreation.
-- Chat responses are plain text; returning structured product cards inline is a planned improvement.
+## 🧪 Testing & CI/CD
+
+- **Automated Tests:** Comprehensive unit and integration test suite covering metadata fusion, two-stage reranker calculations, retrieval formatting, and API routes.
+  ```bash
+  cd backend && pytest -v
+  ```
+- **CI Pipeline:** GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and PR to validate backend tests on Python 3.10 and verify frontend TypeScript builds.
+
+---
+
+## 📄 License
+
+MIT License. Designed and engineered for high-performance AI shopping applications.

@@ -1,0 +1,64 @@
+﻿name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-test:
+    name: Backend Tests & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest httpx pytest-asyncio
+
+      - name: Run Backend Tests
+        working-directory: ./backend
+        env:
+          OPENAI_API_KEY: sk-test-key
+          DATABASE_URL: sqlite:///./test.db
+          QDRANT_URL: ":memory:"
+          DEV_MODE: "true"
+        run: |
+          pytest -v
+
+  frontend-build:
+    name: Frontend Build & Typecheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci || npm install
+
+      - name: Run Typecheck & Build
+        working-directory: ./frontend
+        env:
+          VITE_API_URL: http://localhost:8000
+          VITE_CLERK_PUBLISHABLE_KEY: pk_test_dummy
+        run: npm run build

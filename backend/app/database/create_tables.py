@@ -4,4 +4,4 @@ from app.database.search_models import SearchHistory, ProductSimilarity
 from app.database.activity_models import ActivityLog
 
 Base.metadata.create_all(bind=engine)
-print("✅ Database tables created successfully.")
+print("[SUCCESS] Database tables created successfully in Neon PostgreSQL.")

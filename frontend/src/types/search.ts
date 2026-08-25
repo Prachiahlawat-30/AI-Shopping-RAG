@@ -83,3 +83,13 @@ export interface SearchSuggestionsResponse {
 export interface SearchHistoryResponse {
   recent_searches: string[];
 }
+
+export interface TrendingSearchesResponse {
+  trending_searches: string[];
+}
+
+export interface ProductComparisonResponse {
+  products: ProductCard[];
+  spec_matrix: Record<string, Record<string, any>>;
+  comparison_summary: string;
+}

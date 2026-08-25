@@ -70,10 +70,10 @@ export function useSearchSuggestions(query: string) {
 // Search History
 // -----------------------------------------------------
 
-export function useSearchHistory() {
+export function useSearchHistory(limit = 10) {
   return useQuery<SearchHistoryResponse>({
-    queryKey: ["search-history"],
-    queryFn: getSearchHistory,
+    queryKey: ["search-history", limit],
+    queryFn: () => getSearchHistory(limit),
     staleTime: 1000 * 60 * 10,
   });
-}
+}
