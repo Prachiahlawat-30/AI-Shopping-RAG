@@ -7,6 +7,9 @@
 [![Qdrant](https://img.shields.io/badge/Vector_DB-Qdrant-DC2626.svg?logo=qdrant&logoColor=white)](https://qdrant.tech/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
 
+
+Live Demo : https://ai-shopping-rag.vercel.app
+
 A production-grade, multimodal Retrieval-Augmented Generation (RAG) platform that enables intelligent catalog exploration through computer vision, hybrid semantic retrieval, two-stage relevance re-ranking, and grounded conversational AI.
 
 ---
